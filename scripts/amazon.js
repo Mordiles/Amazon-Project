@@ -1,9 +1,10 @@
 import { products } from "../data/products.js";
 import { formatPriceCents } from "./util/money.js";
+import { cart } from "../data/cart.js";
 
-generateProductHTML();
+generateProductGridHTML();
 
-function generateProductHTML() {
+function generateProductGridHTML() {
   let productHTML = "";
 
   products.forEach((product) => {
@@ -52,7 +53,9 @@ function generateProductHTML() {
         Added
       </div>
 
-      <button class="add-to-cart-button button-primary js-add-to-cart-button">
+      <button class="add-to-cart-button button-primary js-add-to-cart-button" data-product-id="${
+        product.id
+      }">
         Add to Cart
       </button>
     </div>
@@ -61,9 +64,46 @@ function generateProductHTML() {
 
   document.querySelector(".js-product-grid").innerHTML = productHTML;
 
-  document
-    .querySelectorAll(".js-add-to-cart-button")
-    .addEventListener("click", () => {
-      
+  cart.loadStorage();
+
+  document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      //cleaner code to search for an existing item
+      const matchingItem = cart.cartItems.find(
+        (product) => product.productId === productId
+      );
+
+      /* cart.cartItems.forEach((cartItem) => {
+        if (cartItem.productId === productId) {
+          matchingItem = cartItem;
+        }
+      }); */
+
+      if (matchingItem) {
+        matchingItem.quantity += 1;
+      } else {
+        cart.cartItems.push({
+          productId: productId,
+          quantity: 1,
+        });
+      }
+      cart.saveToStorage();
+      console.log(cart.cartItems);
+      generateProductHTML();
+      countTotalQuantity();
     });
+  });
+
+  function countTotalQuantity() {
+    let cartQuantity = 0;
+
+    cart.cartItems.forEach((item) => {
+      cartQuantity += item.quantity;
+    });
+    return cartQuantity;
+  }
+
+  document.querySelector(".js-cart-quantity").innerHTML = countTotalQuantity();
 }
