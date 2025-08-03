@@ -19,6 +19,7 @@ function generateProductGridHTML() {
       const matchedProductName = product.name
         .toLowerCase()
         .includes(searchTerm);
+        
       const matchedProductKeyword = product.keywords.some((keyword) => {
         return keyword.toLowerCase().includes(searchTerm);
       });
