@@ -19,7 +19,7 @@ function generateProductGridHTML() {
       const matchedProductName = product.name
         .toLowerCase()
         .includes(searchTerm);
-        
+
       const matchedProductKeyword = product.keywords.some((keyword) => {
         return keyword.toLowerCase().includes(searchTerm);
       });
@@ -54,7 +54,7 @@ function generateProductGridHTML() {
       </div>
 
       <div class="product-quantity-container">
-        <select>
+        <select class='js-quantity-selector-${product.id}'>
           <option selected value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -103,18 +103,23 @@ function generateProductGridHTML() {
         }
       }); */
 
+      const quantitySelector = document.querySelector(
+        `.js-quantity-selector-${productId}`
+      );
+
+      const quantity = parseInt(quantitySelector.value);
+
       if (matchingItem) {
         matchingItem.quantity += 1;
       } else {
         cart.cartItems.push({
           productId: productId,
-          quantity: 1,
+          quantity: quantity,
+          deliveryId: 1,
         });
       }
       cart.saveToStorage();
-      console.log(cart.cartItems);
       generateProductGridHTML();
-      countTotalQuantity();
     });
   });
 

@@ -67,12 +67,17 @@ export function generatePaymentSummary() {
 
     <div class="payment-summary-row total-row">
       <div>Order total:</div>
-      <div class="payment-summary-money">$${formatPriceCents(orderTotalCents)}</div>
+      <div class="payment-summary-money">$${formatPriceCents(
+        orderTotalCents
+      )}</div>
     </div>
 
     <button class="place-order-button button-primary">
       Place your order
     </button>
   `;
+
+  document.querySelector('.js-return-to-home-link').innerHTML = `${totalProducts} items`
+
   document.querySelector(".js-payment-summary").innerHTML = paymentSummaryHTML;
 }

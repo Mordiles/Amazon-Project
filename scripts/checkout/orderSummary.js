@@ -52,12 +52,33 @@ export function generateOrderSummary() {
         </div>
         <div class="product-quantity">
           <span>
-            Quantity: <span class="quantity-label">${cartItem.quantity}</span>
+            Quantity: <span class="quantity-label js-quantity-label-${
+              matchingProduct.id
+            }">${cartItem.quantity}</span>
           </span>
-          <span class="update-quantity-link link-primary">
+
+          <input type=number class='update-quantity-input js-update-quantity-input js-update-quantity-input-${
+            matchingProduct.id
+          } hide-button' value="${cartItem.quantity}">
+
+          <span class='save-quantity-link 
+          js-save-quantity-link
+          js-save-quantity-${matchingProduct.id} 
+          link-primary 
+          hide-button
+          '
+          data-product-id=${matchingProduct.id}
+          >Save</span>
+
+          <span class="update-quantity-link link-primary js-update-quantity-link js-update-quantity-${
+            matchingProduct.id
+          }"
+          data-product-id='${matchingProduct.id}'>
             Update
           </span>
-          <span class="delete-quantity-link link-primary">
+
+          <span class="delete-quantity-link js-delete-quantity-link link-primary"
+          data-product-id="${matchingProduct.id}">
             Delete
           </span>
         </div>
@@ -88,6 +109,67 @@ export function generateOrderSummary() {
       if (cartItem) {
         cartItem.deliveryId = deliveryId;
       }
+      cart.saveToStorage();
+      generateOrderSummary();
+      generatePaymentSummary();
+    });
+  });
+
+  document.querySelectorAll(".js-delete-quantity-link").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      cart.cartItems = cart.cartItems.filter((item) => {
+        return item.productId !== productId;
+      });
+      console.log(cart.cartItems);
+
+      cart.saveToStorage();
+      generateOrderSummary();
+      generatePaymentSummary();
+    });
+  });
+
+  document.querySelectorAll(".js-update-quantity-link").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      document
+        .querySelector(`.js-update-quantity-${productId}`)
+        .classList.add("hide-button");
+
+      document
+        .querySelector(`.js-quantity-label-${productId}`)
+        .classList.add("hide-button");
+
+      document
+        .querySelector(`.js-update-quantity-input-${productId}`)
+        .classList.remove("hide-button");
+
+      document
+        .querySelector(`.js-save-quantity-${productId}`)
+        .classList.remove("hide-button");
+    });
+  });
+
+  document.querySelectorAll(".js-save-quantity-link").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      const newQuantity = parseInt(
+        document.querySelector(`.js-update-quantity-input-${productId}`).value
+      );
+
+      const matchingProduct = cart.cartItems.find((item) => {
+        return item.productId === productId;
+      });
+
+      if (!newQuantity || newQuantity < 1) {
+        alert("Quantity can't be less than 1");
+        return;
+      }
+
+      matchingProduct.quantity = newQuantity;
       cart.saveToStorage();
       generateOrderSummary();
       generatePaymentSummary();
