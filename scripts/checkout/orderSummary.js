@@ -3,6 +3,7 @@ import { cart } from "../../data/cart.js";
 import { products } from "../../data/products.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
 import { delivery } from "../../data/shipping.js";
+import { generatePaymentSummary } from "./paymentSummary.js";
 
 export function generateOrderSummary() {
   cart.loadStorage();
@@ -89,6 +90,7 @@ export function generateOrderSummary() {
       }
       cart.saveToStorage();
       generateOrderSummary();
+      generatePaymentSummary();
     });
   });
 }
