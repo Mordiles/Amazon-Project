@@ -82,6 +82,22 @@ export function generatePaymentSummary() {
 
   document.querySelector(".js-payment-summary").innerHTML = paymentSummaryHTML;
 
+  disableButtonIfCartIsEmpty();
+
+  function disableButtonIfCartIsEmpty() {
+    const button = document.querySelector(".js-place-order-button");
+
+    if (button) {
+      if (!cart.cartItems || cart.cartItems.length === 0) {
+        button.disabled = true;
+        button.classList.add("disabled",'no-hover');
+        return;
+      } else {
+        button.disabled = false;
+      }
+    }
+  }
+
   document
     .querySelector(".js-place-order-button")
     .addEventListener("click", async () => {
@@ -98,6 +114,8 @@ export function generatePaymentSummary() {
 
         const result = await response.json();
         addOrder(result);
+        cart.cartItems = [];
+        cart.saveToStorage();
       } catch (error) {
         alert("Something went wrong. Please try again.");
       }

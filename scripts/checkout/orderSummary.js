@@ -96,7 +96,18 @@ export function generateOrderSummary() {
     `;
   });
 
+  cartEmpty();
+
   document.querySelector(".js-order-summary").innerHTML = orderSummaryHTML;
+
+  function cartEmpty() {
+    if (!cart.cartItems || cart.cartItems.length === 0) {
+      orderSummaryHTML = `
+      <p>Your cart is empty</p>
+      <a class='button-primary view-product-link' href='amazon.html'>View Products</a>
+      `
+    }
+  }
 
   document.querySelectorAll(".js-delivery-option-input").forEach((option) => {
     option.addEventListener("click", () => {

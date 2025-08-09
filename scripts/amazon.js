@@ -70,7 +70,9 @@ function generateProductGridHTML() {
 
       <div class="product-spacer"></div>
 
-      <div class="added-to-cart">
+      <div class="added-to-cart js-added-to-cart js-added-to-cart-${
+        product.id
+      }">
         <img src="images/icons/checkmark.png">
         Added
       </div>
@@ -87,6 +89,8 @@ function generateProductGridHTML() {
   document.querySelector(".js-product-grid").innerHTML = productHTML;
 
   cart.loadStorage();
+
+  let hideTimeout = {};
 
   document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
     button.addEventListener("click", () => {
@@ -115,12 +119,22 @@ function generateProductGridHTML() {
         cart.cartItems.push({
           productId: productId,
           quantity: quantity,
-          deliveryOptionId: '1',
+          deliveryOptionId: "1",
         });
       }
 
       cart.saveToStorage();
-      generateProductGridHTML();
+      document.querySelector(".js-cart-quantity").innerHTML = countTotalQuantity();
+
+      const messageSelector = document.querySelector(`.js-added-to-cart-${productId}`);
+
+      messageSelector.classList.add("show");
+
+      clearTimeout(hideTimeout[productId]);
+
+      hideTimeout[productId] = setTimeout(() => {
+        messageSelector.classList.remove("show");
+      }, 2000);
     });
   });
 
@@ -147,21 +161,9 @@ function generateProductGridHTML() {
       }
     });
 
-  function getAndDisplaySearch(params) {
+  function getAndDisplaySearch() {
     const search = document.querySelector(".js-search-bar").value.toLowerCase();
 
     window.location.href = `amazon.html?search=${search}`;
-  }
-
-  function addToCart(matchingItem) {
-    if (matchingItem) {
-      matchingItem.quantity += 1;
-    } else {
-      cart.cartItems.push({
-        productId: productId,
-        quantity: quantity,
-        deliveryId: 1,
-      });
-    }
   }
 }

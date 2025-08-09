@@ -217,3 +217,20 @@
   margin-top: 11px;
   margin-bottom: 15px;
 }
+
+.disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no-hover:hover{
+  background-color: rgb(255, 216, 20);
+}
+
+.view-product-link{
+  display: inline-block;
+  padding: 9px 15px;
+  margin-top: 10px;
+  font-size: 15px;
+  text-decoration: none;
+}
