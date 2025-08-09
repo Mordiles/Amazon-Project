@@ -110,14 +110,15 @@ function generateProductGridHTML() {
       const quantity = parseInt(quantitySelector.value);
 
       if (matchingItem) {
-        matchingItem.quantity += 1;
+        matchingItem.quantity += quantity;
       } else {
         cart.cartItems.push({
           productId: productId,
           quantity: quantity,
-          deliveryId: 1,
+          deliveryOptionId: '1',
         });
       }
+
       cart.saveToStorage();
       generateProductGridHTML();
     });
@@ -150,5 +151,17 @@ function generateProductGridHTML() {
     const search = document.querySelector(".js-search-bar").value.toLowerCase();
 
     window.location.href = `amazon.html?search=${search}`;
+  }
+
+  function addToCart(matchingItem) {
+    if (matchingItem) {
+      matchingItem.quantity += 1;
+    } else {
+      cart.cartItems.push({
+        productId: productId,
+        quantity: quantity,
+        deliveryId: 1,
+      });
+    }
   }
 }

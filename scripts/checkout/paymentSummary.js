@@ -1,4 +1,5 @@
 import { cart } from "../../data/cart.js";
+import { addOrder } from "../../data/orders.js";
 import { products } from "../../data/products.js";
 import { delivery } from "../../data/shipping.js";
 import { formatPriceCents } from "../util/money.js";
@@ -8,15 +9,13 @@ export function generatePaymentSummary() {
 
   let totalProducts = 0;
 
-  cart.cartItems.forEach((item) => {
-    totalProducts += item.quantity;
-  });
-
   let totalCents = 0;
 
   let totalShippingCents = 0;
 
   cart.cartItems.forEach((item) => {
+    totalProducts += item.quantity;
+
     const matchingItem = products.find((product) => {
       return product.id === item.productId;
     });
@@ -24,7 +23,7 @@ export function generatePaymentSummary() {
     totalCents += matchingItem.priceCents * item.quantity;
 
     const matchingDeliveryId = delivery.find((option) => {
-      return option.deliveryId === item.deliveryId;
+      return option.deliveryId === item.deliveryOptionId;
     });
 
     totalShippingCents += matchingDeliveryId.priceCents;
@@ -72,12 +71,37 @@ export function generatePaymentSummary() {
       )}</div>
     </div>
 
-    <button class="place-order-button button-primary">
+    <button class="place-order-button js-place-order-button button-primary">
       Place your order
     </button>
   `;
 
-  document.querySelector('.js-return-to-home-link').innerHTML = `${totalProducts} items`
+  document.querySelector(
+    ".js-return-to-home-link"
+  ).innerHTML = `${totalProducts} items`;
 
   document.querySelector(".js-payment-summary").innerHTML = paymentSummaryHTML;
+
+  document
+    .querySelector(".js-place-order-button")
+    .addEventListener("click", async () => {
+      try {
+        const response = await fetch("https://supersimplebackend.dev/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart: cart.cartItems,
+          }),
+        });
+
+        const result = await response.json();
+        addOrder(result);
+      } catch (error) {
+        alert("Something went wrong. Please try again.");
+      }
+
+      window.location.href = "orders.html";
+    });
 }

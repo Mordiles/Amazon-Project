@@ -12,7 +12,7 @@ export function generateOrderSummary() {
 
   cart.cartItems.forEach((cartItem) => {
     const productId = cartItem.productId;
-    const deliveryId = cartItem.deliveryId;
+    const deliveryId = cartItem.deliveryOptionId;
 
     // Cleaner way to code. does the same as the code below
     const matchingProduct = products.find((product) => {
@@ -95,23 +95,22 @@ export function generateOrderSummary() {
   </div>
     `;
   });
+
   document.querySelector(".js-order-summary").innerHTML = orderSummaryHTML;
 
   document.querySelectorAll(".js-delivery-option-input").forEach((option) => {
     option.addEventListener("click", () => {
       const productId = option.dataset.productId;
-      const deliveryId = Number(option.dataset.deliveryId);
+      const deliveryId = option.dataset.deliveryId;
 
       const cartItem = cart.cartItems.find((item) => {
         return item.productId === productId;
       });
 
       if (cartItem) {
-        cartItem.deliveryId = deliveryId;
+        cartItem.deliveryOptionId = deliveryId;
       }
-      cart.saveToStorage();
-      generateOrderSummary();
-      generatePaymentSummary();
+      saveToStorageAndGenerate();
     });
   });
 
@@ -124,9 +123,7 @@ export function generateOrderSummary() {
       });
       console.log(cart.cartItems);
 
-      cart.saveToStorage();
-      generateOrderSummary();
-      generatePaymentSummary();
+      saveToStorageAndGenerate();
     });
   });
 
@@ -134,21 +131,7 @@ export function generateOrderSummary() {
     button.addEventListener("click", () => {
       const productId = button.dataset.productId;
 
-      document
-        .querySelector(`.js-update-quantity-${productId}`)
-        .classList.add("hide-button");
-
-      document
-        .querySelector(`.js-quantity-label-${productId}`)
-        .classList.add("hide-button");
-
-      document
-        .querySelector(`.js-update-quantity-input-${productId}`)
-        .classList.remove("hide-button");
-
-      document
-        .querySelector(`.js-save-quantity-${productId}`)
-        .classList.remove("hide-button");
+      removeAndAddHideButtonClass(productId);
     });
   });
 
@@ -170,14 +153,36 @@ export function generateOrderSummary() {
       }
 
       matchingProduct.quantity = newQuantity;
-      cart.saveToStorage();
-      generateOrderSummary();
-      generatePaymentSummary();
+      saveToStorageAndGenerate();
     });
   });
 }
 
-function generateRadioButton(matchingProduct, deliveryId) {
+function removeAndAddHideButtonClass(productId) {
+  document
+    .querySelector(`.js-update-quantity-${productId}`)
+    .classList.add("hide-button");
+
+  document
+    .querySelector(`.js-quantity-label-${productId}`)
+    .classList.add("hide-button");
+
+  document
+    .querySelector(`.js-update-quantity-input-${productId}`)
+    .classList.remove("hide-button");
+
+  document
+    .querySelector(`.js-save-quantity-${productId}`)
+    .classList.remove("hide-button");
+}
+
+function saveToStorageAndGenerate() {
+  cart.saveToStorage();
+  generateOrderSummary();
+  generatePaymentSummary();
+}
+
+function generateRadioButton(matchingProduct, deliveryOptionId) {
   let radioButtonHTML = "";
 
   delivery.forEach((option) => {
@@ -191,7 +196,7 @@ function generateRadioButton(matchingProduct, deliveryId) {
       data-product-id="${matchingProduct.id}"
       data-delivery-id="${option.deliveryId}"
         name="delivery-option-${matchingProduct.id}"
-        ${deliveryId === option.deliveryId ? "checked" : ""}>
+        ${deliveryOptionId === option.deliveryId ? "checked" : ""}>
       <div>
         <div class="delivery-option-date">
           ${formatDelivery}

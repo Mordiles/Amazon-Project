@@ -18,8 +18,6 @@ class Product {
   getStars() {
     return `images/ratings/rating-${this.rating.stars * 10}.png`;
   }
-
-  
 }
 
 export const products = [
