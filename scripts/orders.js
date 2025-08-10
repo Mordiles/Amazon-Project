@@ -2,10 +2,12 @@ import { orders } from "../data/orders.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
 import { formatPriceCents } from "./util/money.js";
 import { products } from "../data/products.js";
+import { cart } from "../data/cart.js";
 
 generateOrdersGrid();
 
 function generateOrdersGrid() {
+  cart.loadStorage();
   let orderGridHTML = "";
 
   orders.forEach((order) => {
@@ -36,12 +38,45 @@ function generateOrdersGrid() {
 
     <div class="order-details-grid js-order-details-grid">
       ${generateOrderDetails(order)}
+      <div class="product-actions">
+          <a href="tracking.html?orderId=${orderId}">
+            <button class="track-package-button button-secondary js-track-package-button">
+              Track package
+            </button>
+          </a>
+      </div>
     </div>
   </div>
     `;
   });
 
-  document.querySelector('.js-orders-grid').innerHTML = orderGridHTML;
+  document.querySelector(".js-orders-grid").innerHTML = orderGridHTML;
+
+  document.querySelector(".js-cart-quantity").innerHTML =
+    cart.countTotalQuantity();
+
+  document.querySelectorAll(".js-buy-again-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      const matchingItem = cart.cartItems.find((product) => {
+        return product.productId === productId;
+      });
+
+      if (matchingItem) {
+        matchingItem.quantity += 1;
+      } else {
+        cart.cartItems.push({
+          productId: productId,
+          quantity: 1,
+          deliveryOptionId: "1",
+        });
+      }
+
+      cart.saveToStorage();
+      generateOrdersGrid();
+    });
+  });
 
   function generateOrderDetails(order) {
     let orderDetailsHTML = "";
@@ -72,18 +107,11 @@ function generateOrdersGrid() {
           <div class="product-quantity">
             Quantity: ${quantity}
           </div>
-          <button class="buy-again-button button-primary">
+          <button class="buy-again-button button-primary js-buy-again-button"
+          data-product-id='${productId}'>
             <img class="buy-again-icon" src="images/icons/buy-again.png">
             <span class="buy-again-message">Buy it again</span>
           </button>
-        </div>
-  
-        <div class="product-actions">
-          <a href="tracking.html">
-            <button class="track-package-button button-secondary">
-              Track package
-            </button>
-          </a>
         </div>
       `;
     });
