@@ -158,3 +158,8 @@
   padding: 8px;
   border-radius: 50px;
 }
+
+.no-products-found{
+  margin-left: 10px;
+  margin-top: 10px;
+}

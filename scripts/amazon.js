@@ -86,6 +86,10 @@ function generateProductGridHTML() {
     `;
   });
 
+  if (!productHTML) {
+    productHTML = `<p class='no-products-found'>No products matched your search.</p>`;
+  }
+
   document.querySelector(".js-product-grid").innerHTML = productHTML;
 
   cart.loadStorage();
@@ -124,9 +128,12 @@ function generateProductGridHTML() {
       }
 
       cart.saveToStorage();
-      document.querySelector(".js-cart-quantity").innerHTML = countTotalQuantity();
+      document.querySelector(".js-cart-quantity").innerHTML =
+        countTotalQuantity();
 
-      const messageSelector = document.querySelector(`.js-added-to-cart-${productId}`);
+      const messageSelector = document.querySelector(
+        `.js-added-to-cart-${productId}`
+      );
 
       messageSelector.classList.add("show");
 
@@ -166,4 +173,5 @@ function generateProductGridHTML() {
 
     window.location.href = `amazon.html?search=${search}`;
   }
+  document.querySelector(".js-search-bar").value = productName;
 }

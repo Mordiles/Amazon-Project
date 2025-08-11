@@ -38,13 +38,6 @@ function generateOrdersGrid() {
 
     <div class="order-details-grid js-order-details-grid">
       ${generateOrderDetails(order)}
-      <div class="product-actions">
-          <a href="tracking.html?orderId=${orderId}">
-            <button class="track-package-button button-secondary js-track-package-button">
-              Track package
-            </button>
-          </a>
-      </div>
     </div>
   </div>
     `;
@@ -78,6 +71,24 @@ function generateOrdersGrid() {
     });
   });
 
+  document.querySelector(".js-search-button").addEventListener("click", () => {
+    getAndDisplaySearch();
+  });
+
+  document
+    .querySelector(".js-search-bar")
+    .addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        getAndDisplaySearch();
+      }
+    });
+
+  function getAndDisplaySearch() {
+    const search = document.querySelector(".js-search-bar").value.toLowerCase();
+
+    window.location.href = `amazon.html?search=${search}`;
+  }
+
   function generateOrderDetails(order) {
     let orderDetailsHTML = "";
 
@@ -101,9 +112,11 @@ function generateOrdersGrid() {
           <div class="product-name">
             ${matchingProduct.name}
           </div>
+
           <div class="product-delivery-date">
             Arriving on: ${estimatedDeliveryTime}
           </div>
+
           <div class="product-quantity">
             Quantity: ${quantity}
           </div>
@@ -112,6 +125,14 @@ function generateOrdersGrid() {
             <img class="buy-again-icon" src="images/icons/buy-again.png">
             <span class="buy-again-message">Buy it again</span>
           </button>
+        </div>
+
+        <div class="product-actions">
+          <a href="tracking.html?orderId=${order.id}&productId=${productId}">
+            <button class="track-package-button button-secondary js-track-package-button">
+              Track package
+            </button>
+          </a>
         </div>
       `;
     });
